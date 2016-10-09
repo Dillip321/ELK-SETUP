@@ -1,0 +1,365 @@
+Installation of Kibana in windows
+
+
+open to the cmd prompt:
+
+C:\Dillip\Software\elasticsearch-2.3.5\elasticsearch-2.3.5\bin
+
+hit elasticsearch
+
+once Elastic search is up, then 
+hit the browser in chrome : 
+http://localhost:9200
+
+
+once you hit, you will see below screen to ensure it is up and running:
+
+{
+  "name" : "Rahne Sinclair",
+  "cluster_name" : "elasticsearch",
+  "version" : {
+    "number" : "2.3.5",
+    "build_hash" : "90f439ff60a3c0f497f91663701e64ccd01edbb4",
+    "build_timestamp" : "2016-07-27T10:36:52Z",
+    "build_snapshot" : false,
+    "lucene_version" : "5.5.0"
+  },
+  "tagline" : "You Know, for Search"
+}
+
+
+for to start kibana :
+
+C:\Dillip\Software\kibana-4.5.4-windows\kibana-4.5.4-windows\bin
+run kibana
+
+localhost:5601/ 
+
+for sense: 
+
+C:\Dillip\Software\kibana-4.5.4-windows\kibana-4.5.4-windows\bin
+
+run for Kibana:
+
+kibana.bat plugin --install elastic/sense
+
+localhost:5601/app/sense
+
+https://www.youtube.com/watch?v=f_cAbYyuL-c
+
+PUT /ecommerce
+{
+}
+------------------------
+{
+hit the green button, Result should be {
+acknowledged:true
+}
+
+DELETE /ecommerce"
+
+GET /_cat/indices?v
+
+ADDING MAPPING:
+----------------
+
+PUT /employee
+{
+ "mappings" : {
+  "employeedetails" : {
+   "properties" : {
+    "firstName" : {"type": "string"},
+    "lastName" : {"type": "string"},
+     "age"     : { "type" : "integer" },
+    "Address" : { "type" : "integer" }
+   }
+  }
+ }
+}
+
+This will work in unix script:
+
+curl -XPUT localhost:9200/_bulk --data-binary @C:\Dillip\Mosaicdata\employee.json
+
+
+PUT /employee/_bulk --data-binary @C:\Dillip\Mosaicdata\employee.json
+PUT /ecommerce
+{
+"mappings": {
+  "products":{
+    "properties":{
+    "name":{
+    "type":"string"
+           },
+    "price":{
+      "type":"double"
+    },
+    "status":{
+      "type":"string"
+    },
+    "quantity":{
+     "type":"integer"
+},
+"categories":{
+"type":"nested",
+"properties":{
+"name":{
+"type":"string"
+  
+}
+}
+},
+
+"tags":{
+"type":"string"
+}
+}
+}
+}
+}
+
+--Put the document in the index--------
+
+PUT /ecommerce/products/1002
+{
+"name":"Dillip Testing ES Framework: Be Cool",
+"price":30.00,
+"description":"We will quickly turn around mosiac project!",
+"status":"active",
+"quantity":1,
+"categories":[
+{ "name":"Software"}
+],
+"tags":["php","java","Dillip Testing"]
+}
+
+3r document:
+-----------------
+PUT /ecommerce/products/1003
+{
+"name":"Dillip Testing ES Framework: Be Cool",
+"price":150.00,
+"description":"Let us do it!",
+"status":"active",
+"quantity":11,
+"categories":[
+{ "name":"Software"}
+],
+"tags":["php","java","Dillip Testing"]
+}
+
+Now Document Loaded in the Index:
+-------
+Next go to the browser to open up Kibana
+
+localhost:5601/
+
+Kibana GUI will pop up,
+Create the index in kibana like ecommerce
+take out the Time-based events
+
+hit the create button.
+settings->index Patters->click on time-based events->enter inthe Pattern or index name,
+
+automatically create button will pup up, hit it
+
+then go to the Discovery, hit key word like Zend
+
+it will show all the color in the data set .
+
+Replacing the document
+-----------------------------
+
+PUT /ecommerce/products/1001
+{
+"name":"Zend Framework2: from beginner to professional",
+"price":40.00,
+"description":"Learn Zend Framework 2 in just a few hours!",
+"status":"active",
+"quantity":1,
+"categories":[
+{ "name":"Software"}
+],
+"tags":["php","java","Zend Framework"]
+}
+
+Updating the document:
+----------------------------------
+
+POST /ecommerce/products/1001/_update
+{
+"doc":{
+"price":50.00
+}
+}
+
+Deleting document
+------------------------------
+
+DELETE /ecommerce/products/1001
+
+by default document delete based on the id, you can delete based on the query, but 
+you need to download the api from google.
+
+-----------------------
+
+BATCH PROCESSING 
+---------------------------- BULK API To do it. to add no of document---------
+POST /ecommerce/products/_bulk
+{"index":{"_id":"1002"}}
+{"name":"Why elasticsearch is Awesome","price":"50.00",
+"descripion":"the book is all aboutt Elastic!",
+"status":"active","quantity":12,"categories":[{"name":"Software"}],"tags":["elasticsearch","program"]}
+{"index":{"_id":"1003"}}
+{"name":"peanuts","price":"50.00","description":"the peanuts is all aboutt Elastic!",
+"status":"active","quantity":52,"categories":[{"name":"Software"}],"tags":["snacks"]}
+
+----------------GET----------------------
+
+GET /ecommerce/products/1001
+
+
+------------------------BULK ACTION--------------
+
+Modify,update
+
+Retrive the document by ID:
+
+-------------------------------
+
+GET /ecommerce/products/1001
+
+--------------Searching ------------------
+
+Query String-- for simple and Adhoc
+
+GET http://localhost:9020/ecommerce/products/_search?q=*
+
+GET /ecommerce/products/_search?q=*
+
+GET /ecommerce/products/_search?q=zend
+
+GET /ecommerce/products/_search?q=name:zend
+GET /ecommerce/products/_search?q=quantity:1
+GET /ecommerce/products/_search?q=name(zend AND mark)
+
+GET /ecommerce/products/_search?q=(name(zend AND mark) AND STATUS=ACTIVE)
+
+GET /ecommerce/products/_search?q=name:+zen -pasta
+
+GET /ecommerce/products/_search?q=name("zend mark") ( if you reverse the orderm it wont fetch)
+
+How to access the Restful API from the browser for mosaic front:
+
+
+REST FULL API Access by Elastic Search:
+-----------------------------------------------
+http://localhost:9200/ecommerce/products/1001
+
+http://localhost:9200/ecommerce/products/_search?q=*
+http://localhost:9200/ecommerce/products/_search?q=q=(name(Dillip)and STATUS=ACTIVE)
+
+
+
+
+Take this url and hit it in the chrome. you will see the result coming in the json format.
+
+
+
+
+Quert DSL
+
+
+
+LEAF
+
+COMPOUND
+
+Multiple quieres
+
+
+FullText Query
+
+TERM LEVEL
+1980 TO 2000 Find the born
+
+JOINING QUERIES
+
+a) NESETED Query
+b) Has_child and Has_parents
+
+
+GEO Queries
+
+geographical cordinates
+
+-------------------------Logstash-----------------
+
+logstash -e 'input { stdin { } } output { stdout {} }'
+
+logstash.config
+-------------------
+
+input {
+  eventlog {
+    type  => 'Win32-EventLog'
+    logfile  => 'System'
+  }
+}
+output {
+  stdout {  }
+}
+
+then run the command:
+
+\bin logstash -f logstash.config
+
+C:\Dillip\Software\logstash-2.3.1\logstash-2.3.1\bin
+
+logstash -f logstashemp.conf
+
+--------------------------------
+bin\kibana.bat plugin --install elastic/sense
+logstash.bat -f logstashemploy.conf -v 
+
+logstash.config file for Reading csv file------------------
+-----------------------------------------------------------
+
+input 
+{
+    file 
+    {
+        path => "C:\Dillip\Mosaicdata\Employee.csv"
+        type => "Employee"
+        start_position => "beginning"
+        
+    }
+}
+
+filter 
+{
+    csv 
+    {
+    columns => ["EMPID","Employeename","country"]
+        separator => ","
+    }
+}
+
+output 
+{
+IF [type]=~"Employee"{
+}
+    elasticsearch {
+        action => "create"
+        host => "localhost:9200"
+        index => "Employee"
+        
+    }
+	}
+    stdout
+    {
+        codec => rubydebug
+    }
+
+	
+	
